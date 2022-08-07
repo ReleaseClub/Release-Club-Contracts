@@ -26,9 +26,6 @@ describe("ReleaseClub", function () {
     return { club, admin, otherAccount };
   }
 
-  // let release: Release = { tokenContract: "", token: 1 };
-
-  // release2.tokenContract
   describe("Deployment", function () {
     const CLUB_NAME = "my club";
     const DEFAULT_ADMIN_ROLE = '0';
@@ -48,22 +45,25 @@ describe("ReleaseClub", function () {
     expect(await club.viewName()).to.equal(CLUB_NAME);
   });
 
-  it("addRelease() function should work", async function () {
+  it("addReleases() function should work", async function () {
     const { club, admin, otherAccount } = await loadFixture(deployClubFixture);
     let release1: ReleaseStruct = { tokenContract: admin.address, tokenID: 4 };
     let release2: ReleaseStruct = { tokenContract: otherAccount.address, tokenID: 6 };
-    await club.addRelease([release1, release2]);
+    await club.addReleases([release1, release2]);
 
     expect(await club.releases.length).to.equal(2);
   });
 
-  it("addRelease() function should emit an event", async function () {
+  it("addRelease() function should emit some events", async function () {
     const { club, admin, otherAccount } = await loadFixture(deployClubFixture);
     let release1: ReleaseStruct = { tokenContract: admin.address, tokenID: 4 };
     let release2: ReleaseStruct = { tokenContract: otherAccount.address, tokenID: 6 };
-    await expect(club.addRelease([release1, release2]))
+    await expect(club.addReleases([release1, release2]))
       .to.emit(club, "NewRelease")
       .withArgs(release1.tokenContract, release1.tokenID);
+    await expect(club.addReleases([release1, release2]))
+      .to.emit(club, "NewRelease")
+      .withArgs(release2.tokenContract, release2.tokenID);
   });
 
 
