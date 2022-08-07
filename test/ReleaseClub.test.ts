@@ -22,6 +22,11 @@ describe("ReleaseClub", function () {
     return { club, admin, otherAccount };
   }
 
+  interface Release {
+    tokenContract: string;
+    token: string;
+  }
+
   describe("Deployment", function () {
     const CLUB_NAME = "my club";
     const DEFAULT_ADMIN_ROLE = '0';
@@ -30,16 +35,18 @@ describe("ReleaseClub", function () {
 
     it("Arg should have the right value", async function () {
       const { club, admin } = await loadFixture(deployClubFixture);
-
-      expect(await club.clubName()).to.equal(CLUB_NAME);
-      expect(await this.accessControl.hasRole(DEFAULT_ADMIN_ROLE, admin)).to.equal(true);
+      const rel = await club.rele
+        expect(await club.clubName()).to.equal(CLUB_NAME);
+      // expect(await this.accessControl.hasRole(DEFAULT_ADMIN_ROLE, admin)).to.equal(true);
     });
   });
-  //   it("Should set the right owner", async function () {
-  //     const { lock, owner } = await loadFixture(deployOneYearLockFixture);
 
-  //     expect(await lock.owner()).to.equal(owner.address);
-  //   });
+  it("addRelease() function should work", async function () {
+    const { club, admin } = await loadFixture(deployClubFixture);
+    let newRelease: Release();
+    // newRelease.token = "token";
+    expect(await club.viewReleases()).to.equal("");
+  });
 
   //   it("Should receive and store the funds to lock", async function () {
   //     const { lock, lockedAmount } = await loadFixture(
