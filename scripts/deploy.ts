@@ -3,21 +3,18 @@ import hre, { ethers } from "hardhat";
 async function main() {
 
   const WAITING_UNTIL_DEPLOYMENT = 70000;    // in miliseconds
-  const CLUB_NAME = "TESTCLUB";
-  const ReleaseClub = await ethers.getContractFactory("ReleaseClub");
-  const club = await ReleaseClub.deploy(CLUB_NAME);
+  const ClubFactory = await ethers.getContractFactory("ClubFactory");
+  const factory = await ClubFactory.deploy();
+  await factory.deployed();
 
-  await club.deployed();
-
-  console.log("ReleaseClub contract deployed to:", club.address);
+  console.log("ClubFactory contract deployed to:", factory.address);
 
   // Verify the contract
   const waitFor = (delay: number) =>
     new Promise((resolve) =>
       setTimeout(() => {
         hre.run("verify:verify", {
-          address: club.address,
-          constructorArguments: [CLUB_NAME],
+          address: factory.address,
         });
       }, delay)
     );

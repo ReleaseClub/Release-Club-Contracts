@@ -2,27 +2,28 @@
 pragma solidity ^0.8.9;
 
 // Import this file to use console.log
-import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 struct Release {
     address tokenContract;
     address token;
 }
 
-contract ReleaseClub is AccessControlEnumerable {
-    Release[] public releases;
-    bytes32 public constant MEMBER_ROLE = keccak256("MEMBER_ROLE");
-    bytes32 public constant MOD_ROLE = keccak256("MOD_ROLE");
-    string public clubName;
-
-    constructor(string memory name) {
+contract ReleaseClub is AccessControlEnumerable{
+   
+   event NewRelease(address contractAddress,address tokenAddress);
+   Release[] public releases;
+   bytes32 public constant MEMBER_ROLE = keccak256("MEMBER_ROLE");
+   bytes32 public constant MOD_ROLE = keccak256("MOD_ROLE");
+   string public clubName;
+    constructor(string memory name,address creator) {
         // Grant the contract deployer the default admin role: it will be able
         // to grant and revoke any roles
-        clubName = name;
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(MOD_ROLE, msg.sender);
-        _setupRole(MEMBER_ROLE, msg.sender);
+        clubName=name;
+        _setupRole(DEFAULT_ADMIN_ROLE, creator);
+        _setupRole(MOD_ROLE, creator);
+        _setupRole(MEMBER_ROLE, creator);
     }
 
     function viewReleases() public view returns (Release[] memory) {
@@ -67,15 +68,14 @@ contract ReleaseClub is AccessControlEnumerable {
     {
         _revokeRole(MOD_ROLE, account);
     }
-
-    function addRelease(Release[] memory newReleases, uint256 length)
-        public
-        onlyRole(MEMBER_ROLE)
-    {
-        uint256 i = 0;
-        while (i < length) {
-            releases.push(newReleases[i]);
-            i++;
-        }
-    }
+    
+   function addRelease(Release[] memory newReleases) public onlyRole (MEMBER_ROLE) {
+       uint256 i = 0;
+       while(i<newReleases.length)
+       {
+           releases.push(newReleases[i]);
+           emit NewRelease(newReleases[i].tokenContract,newReleases[i].token);
+           i++;
+       }
+   }
 }
