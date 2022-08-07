@@ -3,6 +3,10 @@ import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import web3 from "web3";
+import { ReleaseClub__factory } from "../typechain-types";
+import { ReleaseStruct } from "../typechain-types/contracts/ReleaseClub";
+
+const CLUB_NAME = "my club";
 
 describe("ReleaseClub", function () {
   // We define a fixture to reuse the same setup in every test.
@@ -22,11 +26,9 @@ describe("ReleaseClub", function () {
     return { club, admin, otherAccount };
   }
 
-  interface Release {
-    tokenContract: string;
-    token: string;
-  }
+  // let release: Release = { tokenContract: "", token: 1 };
 
+  // release2.tokenContract
   describe("Deployment", function () {
     const CLUB_NAME = "my club";
     const DEFAULT_ADMIN_ROLE = '0';
@@ -35,23 +37,35 @@ describe("ReleaseClub", function () {
 
     it("Arg should have the right value", async function () {
       const { club, admin } = await loadFixture(deployClubFixture);
-      const rel = await club.rele
-        expect(await club.clubName()).to.equal(CLUB_NAME);
+
+      expect(await club.clubName()).to.equal(CLUB_NAME);
       // expect(await this.accessControl.hasRole(DEFAULT_ADMIN_ROLE, admin)).to.equal(true);
     });
   });
 
-  it("addRelease() function should work", async function () {
+  it("viewName() function should work", async function () {
     const { club, admin } = await loadFixture(deployClubFixture);
-    let newRelease: Release();
-    // newRelease.token = "token";
-    expect(await club.viewReleases()).to.equal("");
+    expect(await club.viewName()).to.equal(CLUB_NAME);
   });
 
-  //   it("Should receive and store the funds to lock", async function () {
-  //     const { lock, lockedAmount } = await loadFixture(
-  //       deployOneYearLockFixture
-  //     );
+  it("addRelease() function should work", async function () {
+    const { club, admin, otherAccount } = await loadFixture(deployClubFixture);
+    let release1: ReleaseStruct = { tokenContract: admin.address, tokenID: 4 };
+    let release2: ReleaseStruct = { tokenContract: otherAccount.address, tokenID: 6 };
+    await club.addRelease([release1, release2]);
+
+    expect(await club.releases.length).to.equal(2);
+  });
+
+  it("addRelease() function should emit an event", async function () {
+    const { club, admin, otherAccount } = await loadFixture(deployClubFixture);
+    let release1: ReleaseStruct = { tokenContract: admin.address, tokenID: 4 };
+    let release2: ReleaseStruct = { tokenContract: otherAccount.address, tokenID: 6 };
+    await expect(club.addRelease([release1, release2]))
+      .to.emit(club, "NewRelease")
+      .withArgs(release1.tokenContract, release1.tokenID);
+  });
+
 
   //     expect(await ethers.provider.getBalance(lock.address)).to.equal(
   //       lockedAmount
