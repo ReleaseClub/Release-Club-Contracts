@@ -69,7 +69,7 @@ contract ReleaseClub is AccessControlEnumerable{
         _revokeRole(MOD_ROLE, account);
     }
     
-   function addRelease(Release[] memory newReleases) public onlyRole (MEMBER_ROLE) {
+   function addReleases(Release[] memory newReleases) public onlyRole (MEMBER_ROLE) {
        uint256 i = 0;
        while(i<newReleases.length)
        {
