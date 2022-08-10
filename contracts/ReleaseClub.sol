@@ -102,4 +102,14 @@ contract ReleaseClub is AccessControlEnumerable {
         }
     }
 
+    /**
+     * @dev Returns a boolean value indicating whether the given `contractAddr` corresponds to an ERC721 compliant contract.
+     */
+    function isTheContractERC721Compliant(address contractAddr)
+        public
+        view
+        returns (bool result)
+    {
+        return IERC721(contractAddr).supportsInterface(0x80ac58cd);
+    }
 }
