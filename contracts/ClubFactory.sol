@@ -3,10 +3,14 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "contracts/ReleaseClub.sol";
+import "./strings.sol";
 
 contract ClubFactory is Ownable, Pausable {
+    using strings for *;
+
     event ClubCreated(address ClubAddress, string clubName);
 
+    uint immutable MAX_NAME_SIZE = 20; // Maximum number of club name characters
     address[] public clubs;
     mapping(address => address[]) public clubOwners;
 
@@ -38,6 +42,13 @@ contract ClubFactory is Ownable, Pausable {
     }
 
     function addClub(string memory name) public payable whenNotPaused {
+        // Make sure the club name has a maximum sixe of 20 characters
+        bytes32 nameInBytes32 = strings.toBytes32(name);
+        uint nameLength = strings.len(nameInBytes32);
+        if (nameLength > MAX_NAME_SIZE) {
+            revert("Error: club name too long");
+        }
+
         ReleaseClub club = new ReleaseClub(name, msg.sender);
         clubs.push(address(club));
         clubOwners[msg.sender].push(address(club));
