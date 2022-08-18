@@ -24,17 +24,10 @@ contract ReleaseClub is AccessControlEnumerableUpgradeable {
         // Grant the creator the default admin role: it will be able
         // to grant and revoke any roles
         clubName = name;
-        _grantRole(DEFAULT_ADMIN_ROLE, creator);
+        _grantRole(DEFAULT_ADMIN_ROLE, creator); // _setupRole() is deprecated
         _grantRole(MOD_ROLE, creator);
         _grantRole(MEMBER_ROLE, creator);
     }
-
-    // constructor(string memory name, address creator) {
-    //     clubName = name;
-    //     _setupRole(DEFAULT_ADMIN_ROLE, creator);
-    //     _setupRole(MOD_ROLE, creator);
-    //     _setupRole(MEMBER_ROLE, creator);
-    // }
 
     function viewReleases() public view returns (Release[] memory) {
         return releases;
