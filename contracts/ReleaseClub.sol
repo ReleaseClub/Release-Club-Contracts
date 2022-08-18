@@ -21,6 +21,7 @@ contract ReleaseClub is AccessControlEnumerableUpgradeable {
         public
         initializer
     {
+        __AccessControlEnumerable_init();
         // Grant the creator the default admin role: it will be able
         // to grant and revoke any roles
         clubName = name;
