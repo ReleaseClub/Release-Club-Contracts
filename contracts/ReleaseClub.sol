@@ -16,6 +16,7 @@ contract ReleaseClub is AccessControlEnumerableUpgradeable {
     bytes32 public constant MEMBER_ROLE = keccak256("MEMBER_ROLE");
     bytes32 public constant MOD_ROLE = keccak256("MOD_ROLE");
     string public clubName;
+    uint256[20] reserved;
 
     function initialize(string memory name, address creator)
         public
