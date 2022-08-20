@@ -10,7 +10,7 @@ struct Release {
     uint256 tokenID;
 }
 
-contract ReleaseClub is AccessControlEnumerableUpgradeable {
+contract ReleaseClubUpgradeable is AccessControlEnumerableUpgradeable {
     event NewRelease(address tokenContract, uint256 tokenID);
     Release[] public releases;
     bytes32 public constant MEMBER_ROLE = keccak256("MEMBER_ROLE");
@@ -67,6 +67,7 @@ contract ReleaseClub is AccessControlEnumerableUpgradeable {
         _grantRole(MEMBER_ROLE, account);
     }
 
+    // should be called "revokeModerator"
     function RemoveModerator(address account)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -74,6 +75,7 @@ contract ReleaseClub is AccessControlEnumerableUpgradeable {
         _revokeRole(MOD_ROLE, account);
     }
 
+    // should be called "addReleases"
     function addRelease(Release[] memory newReleases)
         public
         onlyRole(MEMBER_ROLE)
