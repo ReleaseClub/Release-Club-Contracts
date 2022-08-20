@@ -4,15 +4,42 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
-import "contracts/ReleaseClub.sol";
+import "contracts/ReleaseClubUpgradeable.sol";
 
 contract ClubFactory is Ownable, Pausable {
-    address constant RELEASE_CLUB_ADDRESS =
-        0xa78491157f43125f4a67050be2d90bA01eBCd2d4;
+    address immutable clubImplementation;
+
     event ClubCreated(address ClubAddress, string clubName);
 
     address[] public clubs;
     mapping(address => address[]) public clubOwners;
+
+    constructor() {
+        clubImplementation = address(new ReleaseClubUpgradeable());
+    }
+
+    function addClub(string memory name)
+        external
+        payable
+        whenNotPaused
+        returns (address)
+    {
+        address clone = Clones.clone(clubImplementation);
+        // This function is equivalent to the constructor
+        ReleaseClubUpgradeable(clone).initialize(name, msg.sender);
+        clubs.push(clone);
+        clubOwners[msg.sender].push(clone); // JR - Not sure
+        emit ClubCreated(clone, name);
+        return clone;
+    }
+
+    function viewClubs() public view returns (address[] memory) {
+        return clubs;
+    }
+
+    function getClubs(address owner) public view returns (address[] memory) {
+        return clubOwners[owner];
+    }
 
     /**
      * @dev Pause the factory contract.
@@ -39,22 +66,5 @@ contract ClubFactory is Ownable, Pausable {
      */
     function unpauseTheFactory() public onlyOwner whenPaused {
         _unpause();
-    }
-
-    function addClub(string memory name) public payable whenNotPaused {
-        address newClubAddr = Clones.clone(RELEASE_CLUB_ADDRESS);
-        // This function is equivalent to the constructor
-        ReleaseClub(newClubAddr).initialize(name, msg.sender);
-        clubs.push(newClubAddr);
-        clubOwners[msg.sender].push(newClubAddr);
-        emit ClubCreated(newClubAddr, name);
-    }
-
-    function viewClubs() public view returns (address[] memory) {
-        return clubs;
-    }
-
-    function getClubs(address owner) public view returns (address[] memory) {
-        return clubOwners[owner];
     }
 }
