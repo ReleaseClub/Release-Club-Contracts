@@ -1,14 +1,21 @@
 pragma solidity ^0.8.9;
 // SPDX-License-Identifier: MIT
 
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "contracts/ReleaseClubUpgradeable.sol";
 
 contract ClubFactory is Ownable, Pausable {
-    address immutable clubImplementation;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
+    /// @dev wallet address => [contract addresses]
+    mapping(address => EnumerableSet.AddressSet) private deployments;
+
+    address public immutable clubImplementation;
+
+    /// @dev Emitted when a club is created (a proxy is deployed).
     event ClubCreated(address ClubAddress, string clubName);
 
     address[] public clubs;
