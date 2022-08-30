@@ -37,7 +37,7 @@ describe("ClubFactory", function () {
 
   it("addClub should create a proxy contract", async function () {
     const { clubFactory, admin, otherAccount } = await loadFixture(deployClubFactoryFixture);
-    const ReleaseClub = await ethers.getContractFactory("ReleaseClubUpgradeable");
+    const ReleaseClub = await ethers.getContractFactory("ReleaseClub");
     await clubFactory.connect(admin).addClub(CLUB_NAME);
     const proxy = await upgrades.deployProxy(ReleaseClub, [CLUB_NAME, admin.address]);
     expect(await proxy.connect(admin).viewName()).to.equal(CLUB_NAME);

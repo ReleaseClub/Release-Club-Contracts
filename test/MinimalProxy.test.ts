@@ -9,9 +9,9 @@ const MEMBER_ROLE = web3.utils.soliditySha3('MEMBER_ROLE');
 
 describe("Minimal Proxy | EIP-1167", function () {
 
-    it("The proxy should forward all the calls to the ReleaseClubUpgradeable contract", async function () {
+    it("The proxy should forward all the calls to the ReleaseClub contract", async function () {
         const [admin, otherAccount] = await ethers.getSigners();
-        const ReleaseClub = await ethers.getContractFactory("ReleaseClubUpgradeable");
+        const ReleaseClub = await ethers.getContractFactory("ReleaseClub");
         let otherAccountAddress = otherAccount.address.toLowerCase();
         // const releaseClub = await ReleaseClub.deploy();
         const proxy = await upgrades.deployProxy(ReleaseClub, [CLUB_NAME, admin.address]);

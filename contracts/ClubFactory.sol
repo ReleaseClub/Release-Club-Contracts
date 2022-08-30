@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
-import "contracts/ReleaseClubUpgradeable.sol";
+import "contracts/ReleaseClub.sol";
 
 contract ClubFactory is Ownable, Pausable {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -21,7 +21,7 @@ contract ClubFactory is Ownable, Pausable {
     address[] public clubs;
 
     constructor() {
-        clubImplementation = address(new ReleaseClubUpgradeable());
+        clubImplementation = address(new ReleaseClub());
     }
 
     function addClub(string memory name)
@@ -32,7 +32,7 @@ contract ClubFactory is Ownable, Pausable {
     {
         address clone = Clones.clone(clubImplementation);
         // This function is equivalent to the constructor
-        ReleaseClubUpgradeable(clone).initialize(name, msg.sender);
+        ReleaseClub(clone).initialize(name, msg.sender);
         clubs.push(clone);
         clubOwnersToClubs[msg.sender].add(clone);
         emit ClubCreated(clone, name);

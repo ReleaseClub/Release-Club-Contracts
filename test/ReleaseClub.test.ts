@@ -2,8 +2,8 @@ import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import web3 from "web3";
-import { ReleaseClubUpgradeable__factory } from "../typechain-types";
-import { ReleaseStruct } from "../typechain-types/contracts/ReleaseClubUpgradeable";
+import { ReleaseClub__factory } from "../typechain-types";
+import { ReleaseStruct } from "../typechain-types/contracts/ReleaseClub";
 
 const CLUB_NAME = "my club";
 const DEFAULT_ADMIN_ROLE = '0x'.concat('0'.repeat(64));  // It's a bytes32 type
@@ -18,7 +18,7 @@ describe("ReleaseClub", function () {
   async function deployClubFixture() {
     // Contracts are deployed using the first signer/account by default
     const [admin, otherAccount, bobAccount, potentialCreator] = await ethers.getSigners();
-    const Club = await ethers.getContractFactory("ReleaseClubUpgradeable");
+    const Club = await ethers.getContractFactory("ReleaseClub");
     const club = await Club.deploy();
     return { club, admin, otherAccount, bobAccount, potentialCreator };
   }

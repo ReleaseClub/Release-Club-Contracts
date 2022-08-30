@@ -10,7 +10,7 @@ struct Release {
     uint256 tokenID;
 }
 
-contract ReleaseClubUpgradeable is AccessControlEnumerableUpgradeable {
+contract ReleaseClub is AccessControlEnumerableUpgradeable {
     event NewRelease(address tokenContract, uint256 tokenID);
     Release[] public releases;
     bytes32 public constant MEMBER_ROLE = keccak256("MEMBER_ROLE");
