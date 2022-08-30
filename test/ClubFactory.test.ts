@@ -5,19 +5,9 @@ import { ethers, upgrades } from "hardhat";
 import { ClubFactory__factory } from "../typechain-types";
 
 const CLUB_NAME = "my club";
+// let clubAddress: string;
 
 describe("ClubFactory", function () {
-  // We define a fixture to reuse the same setup in every test.
-  // We use loadFixture to run this setup once, snapshot that state,
-  // and reset Hardhat Network to that snapshopt in every test.
-  async function deployClubFactoryFixture() {
-    const CLUB_NAME = "my club";
-    // Contracts are deployed using the first signer/account by default
-    const [admin, otherAccount] = await ethers.getSigners();
-    const ClubFactory = await ethers.getContractFactory("ClubFactory");
-    const clubFactory = await ClubFactory.deploy();
-    return { clubFactory, admin, otherAccount };
-  }
 
   async function deployClubFixture() {
     const [admin, otherAccount] = await ethers.getSigners();
@@ -26,7 +16,22 @@ describe("ClubFactory", function () {
     return { club, admin, otherAccount };
   }
 
+  async function deployClubFactoryFixture() {
+    let clubAddress = "";
+    let defaultAddress = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
+    const { club } = await loadFixture(deployClubFixture);
+    const CLUB_NAME = "my club";
+    // Contracts are deployed using the first signer/account by default
+    const [admin, otherAccount] = await ethers.getSigners();
+    const ClubFactory = await ethers.getContractFactory("ClubFactory");
+    clubAddress !== undefined ? club.address : defaultAddress;
+
+    const clubFactory = await ClubFactory.deploy(defaultAddress);  // (clubAddress);
+    return { clubFactory, admin, otherAccount };
+  }
+
   it("addClub should create a new club", async function () {
+    // const { club } = await loadFixture(deployClubFixture);
     const { clubFactory, admin, otherAccount } = await loadFixture(deployClubFactoryFixture);
 
     // let numOfClubOwners = await clubFactory.clubOwners.length;  // will always be 0

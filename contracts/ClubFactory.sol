@@ -20,10 +20,11 @@ contract ClubFactory is Ownable, Pausable {
 
     address[] public clubs;
 
-    constructor() {
-        clubImplementation = address(new ReleaseClub());
+    constructor(address _clubImplementation) {
+        clubImplementation = _clubImplementation;
     }
 
+    // TODO: pay Ethers when adding a club
     function addClub(string memory name)
         external
         payable
