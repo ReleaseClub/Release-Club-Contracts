@@ -10,16 +10,15 @@ import "contracts/ReleaseClubUpgradeable.sol";
 contract ClubFactory is Ownable, Pausable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    /// @dev wallet address => [contract addresses]
-    mapping(address => EnumerableSet.AddressSet) private deployments;
-
-    address public immutable clubImplementation;
-
     /// @dev Emitted when a club is created (a proxy is deployed).
     event ClubCreated(address ClubAddress, string clubName);
 
+    /// @dev wallet address => [club addresses]
+    mapping(address => EnumerableSet.AddressSet) private clubOwnersToClubs;
+
+    address public immutable clubImplementation;
+
     address[] public clubs;
-    mapping(address => address[]) public clubOwners;
 
     constructor() {
         clubImplementation = address(new ReleaseClubUpgradeable());
@@ -35,7 +34,7 @@ contract ClubFactory is Ownable, Pausable {
         // This function is equivalent to the constructor
         ReleaseClubUpgradeable(clone).initialize(name, msg.sender);
         clubs.push(clone);
-        clubOwners[msg.sender].push(clone); // JR - Not sure
+        clubOwnersToClubs[msg.sender].add(clone);
         emit ClubCreated(clone, name);
         return clone;
     }
@@ -45,7 +44,8 @@ contract ClubFactory is Ownable, Pausable {
     }
 
     function getClubs(address owner) public view returns (address[] memory) {
-        return clubOwners[owner];
+        /// @dev The `values` function should be called only inside a view function
+        return clubOwnersToClubs[owner].values();
     }
 
     /**

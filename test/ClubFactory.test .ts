@@ -18,6 +18,7 @@ describe("ClubFactory", function () {
     const clubFactory = await ClubFactory.deploy();
     return { clubFactory, admin, otherAccount };
   }
+
   async function deployClubFixture() {
     const [admin, otherAccount] = await ethers.getSigners();
     const Club = await ethers.getContractFactory("ReleaseClub");
@@ -43,7 +44,7 @@ describe("ClubFactory", function () {
     expect(await proxy.connect(otherAccount).viewName()).to.equal(CLUB_NAME);
   });
 
-  it("Each call to addClub should increment the 'clubs' array", async function () {
+  it("n calls to addClub should create n clubs", async function () {
     const { clubFactory, admin, otherAccount } = await loadFixture(deployClubFactoryFixture);
     const NUM_OF_CLUBS = 5;
     for (let i = 1; i <= NUM_OF_CLUBS; i++) {
@@ -55,7 +56,12 @@ describe("ClubFactory", function () {
     let clubsArray = await clubFactory.connect(admin).viewClubs();
     console.log("Array: ", clubsArray);
     expect(clubsArray.length).to.be.equal(NUM_OF_CLUBS);
+    let clubsOwnedByAdmin = await clubFactory.connect(admin).getClubs(admin.address);
+    console.log("clubsOwnedByAdmin: ", clubsOwnedByAdmin);
+    expect(clubsOwnedByAdmin.length).to.be.equal(NUM_OF_CLUBS);
   });
+
+  // TODO let other signer create clubs, not only admin.
 
   /***************************** Pausable feature *********************************/
   it("addClub should be disabled when the contract is paused", async function () {
