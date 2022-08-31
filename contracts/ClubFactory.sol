@@ -32,7 +32,7 @@ contract ClubFactory is Ownable, Pausable {
      *
      * TODO: pay Ethers when creating a club
      */
-    function createClub(string memory name)
+    function createClub(string memory clubName)
         external
         payable
         whenNotPaused
@@ -40,10 +40,10 @@ contract ClubFactory is Ownable, Pausable {
     {
         address clone = Clones.clone(clubImplementation);
         // This function is equivalent to the ReleaseClub constructor
-        ReleaseClub(clone).initialize(name, msg.sender);
+        ReleaseClub(clone).initialize(clubName, msg.sender);
         clubs.push(clone);
         clubOwnersToClubs[msg.sender].add(clone);
-        emit ClubCreated(clone, name);
+        emit ClubCreated(clone, clubName);
         return clone;
     }
 
@@ -62,7 +62,7 @@ contract ClubFactory is Ownable, Pausable {
 
     /**
      * @dev Pause the factory contract.
-     * Disable the `addClub` function.
+     * Disable the `createClub` function.
      *
      * Requirements:
      *
@@ -75,7 +75,7 @@ contract ClubFactory is Ownable, Pausable {
     }
 
     /**
-     * @dev Unpause the factory contract or enable the `addClub` function.
+     * @dev Unpause the factory contract or enable the `createClub` function.
      *
      * Requirements:
      *
