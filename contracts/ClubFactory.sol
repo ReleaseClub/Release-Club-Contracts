@@ -1,5 +1,5 @@
-pragma solidity ^0.8.9;
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
@@ -24,15 +24,22 @@ contract ClubFactory is Ownable, Pausable {
         clubImplementation = _clubImplementation;
     }
 
-    // TODO: pay Ethers when adding a club
-    function addClub(string memory name)
+    /**
+     * @dev Create a minimal proxy contract for the new club. It is NOT upgradeable.
+     * A proxy is a small contract that has the minimum code to forward all the calls to
+     * the main contract, which is `ReleaseClub`.
+     * This proxy has only state variables referring to one single club.
+     *
+     * TODO: pay Ethers when creating a club
+     */
+    function createClub(string memory name)
         external
         payable
         whenNotPaused
         returns (address)
     {
         address clone = Clones.clone(clubImplementation);
-        // This function is equivalent to the constructor
+        // This function is equivalent to the ReleaseClub constructor
         ReleaseClub(clone).initialize(name, msg.sender);
         clubs.push(clone);
         clubOwnersToClubs[msg.sender].add(clone);
@@ -44,7 +51,11 @@ contract ClubFactory is Ownable, Pausable {
         return clubs;
     }
 
-    function getClubs(address owner) public view returns (address[] memory) {
+    function getClubsByOwner(address owner)
+        public
+        view
+        returns (address[] memory)
+    {
         /// @dev The `values` function should be called only inside a view function
         return clubOwnersToClubs[owner].values();
     }

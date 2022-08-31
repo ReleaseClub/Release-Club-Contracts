@@ -16,19 +16,19 @@ contract ReleaseClub is AccessControlEnumerableUpgradeable {
     bytes32 public constant MEMBER_ROLE = keccak256("MEMBER_ROLE");
     bytes32 public constant MOD_ROLE = keccak256("MOD_ROLE");
     string public clubName;
-    uint256[20] reserved;
+    uint256[20] __gap;
 
-    function initialize(string memory name, address creator)
+    function initialize(string memory _clubName, address clubCreator)
         public
         initializer
     {
         __AccessControlEnumerable_init();
         // Grant the creator the default admin role: it will be able
         // to grant and revoke any roles
-        clubName = name;
-        _grantRole(DEFAULT_ADMIN_ROLE, creator); // _setupRole() is deprecated
-        _grantRole(MOD_ROLE, creator);
-        _grantRole(MEMBER_ROLE, creator);
+        clubName = _clubName;
+        _grantRole(DEFAULT_ADMIN_ROLE, clubCreator); // _setupRole() is deprecated
+        _grantRole(MOD_ROLE, clubCreator);
+        _grantRole(MEMBER_ROLE, clubCreator);
     }
 
     function viewReleases() public view returns (Release[] memory) {

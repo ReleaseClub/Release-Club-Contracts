@@ -35,7 +35,7 @@ describe("ClubFactory", function () {
     const { clubFactory, admin, otherAccount } = await loadFixture(deployClubFactoryFixture);
 
     // let numOfClubOwners = await clubFactory.clubOwners.length;  // will always be 0
-    await expect(clubFactory.connect(otherAccount).addClub(CLUB_NAME))
+    await expect(clubFactory.connect(otherAccount).createClub(CLUB_NAME))
       .to.emit(clubFactory, "ClubCreated");
     // .withArgs(CLUB_NAME);
   });
@@ -43,7 +43,7 @@ describe("ClubFactory", function () {
   it("addClub should create a proxy contract", async function () {
     const { clubFactory, admin, otherAccount } = await loadFixture(deployClubFactoryFixture);
     const ReleaseClub = await ethers.getContractFactory("ReleaseClub");
-    await clubFactory.connect(admin).addClub(CLUB_NAME);
+    await clubFactory.connect(admin).createClub(CLUB_NAME);
     const proxy = await upgrades.deployProxy(ReleaseClub, [CLUB_NAME, admin.address]);
     expect(await proxy.connect(admin).viewName()).to.equal(CLUB_NAME);
     expect(await proxy.connect(otherAccount).viewName()).to.equal(CLUB_NAME);
@@ -53,7 +53,7 @@ describe("ClubFactory", function () {
     const { clubFactory, admin, otherAccount } = await loadFixture(deployClubFactoryFixture);
     const NUM_OF_CLUBS = 5;
     for (let i = 1; i <= NUM_OF_CLUBS; i++) {
-      let tx = await clubFactory.connect(admin).addClub(CLUB_NAME + i);
+      let tx = await clubFactory.connect(admin).createClub(CLUB_NAME + i);
       let cReceipt: ContractReceipt = await tx.wait();
       console.log(i, " - clone address: ",
         cReceipt.events !== undefined ? cReceipt.events[0].address : undefined);
@@ -61,7 +61,7 @@ describe("ClubFactory", function () {
     let clubsArray = await clubFactory.connect(admin).viewClubs();
     console.log("Array: ", clubsArray);
     expect(clubsArray.length).to.be.equal(NUM_OF_CLUBS);
-    let clubsOwnedByAdmin = await clubFactory.connect(admin).getClubs(admin.address);
+    let clubsOwnedByAdmin = await clubFactory.connect(admin).getClubsByOwner(admin.address);
     console.log("clubsOwnedByAdmin: ", clubsOwnedByAdmin);
     expect(clubsOwnedByAdmin.length).to.be.equal(NUM_OF_CLUBS);
   });
@@ -73,7 +73,7 @@ describe("ClubFactory", function () {
     const { clubFactory, admin } = await loadFixture(deployClubFactoryFixture);
 
     await clubFactory.connect(admin).pauseTheFactory();
-    await expect(clubFactory.addClub(CLUB_NAME))
+    await expect(clubFactory.createClub(CLUB_NAME))
       .to.be.reverted;
   });
 
@@ -82,7 +82,7 @@ describe("ClubFactory", function () {
 
     await clubFactory.connect(admin).pauseTheFactory();
     await clubFactory.connect(admin).unpauseTheFactory();
-    await expect(clubFactory.connect(admin).addClub(CLUB_NAME))
+    await expect(clubFactory.connect(admin).createClub(CLUB_NAME))
       .to.emit(clubFactory, "ClubCreated");
   });
 
