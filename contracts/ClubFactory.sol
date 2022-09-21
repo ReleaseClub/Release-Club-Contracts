@@ -6,8 +6,11 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "contracts/ReleaseClub.sol";
+import "./strings.sol";
+
 
 contract ClubFactory is Ownable, Pausable {
+    using strings for *;
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @dev Emitted when a club is created (a proxy is deployed).
@@ -18,6 +21,7 @@ contract ClubFactory is Ownable, Pausable {
 
     address public immutable clubImplementation;
 
+    uint immutable MAX_NAME_SIZE = 20; // Maximum number of club name characters
     address[] public clubs;
 
     constructor(address _clubImplementation) {
@@ -38,6 +42,13 @@ contract ClubFactory is Ownable, Pausable {
         whenNotPaused
         returns (address)
     {
+        // Make sure the club name has a maximum sixe of 20 characters
+        bytes32 nameInBytes32 = strings.toBytes32(name);
+        uint nameLength = strings.len(nameInBytes32);
+        if (nameLength > MAX_NAME_SIZE) {
+            revert("Error: club name too long");
+        }
+
         address clone = Clones.clone(clubImplementation);
         // This function is equivalent to the ReleaseClub constructor
         ReleaseClub(clone).initialize(clubName, msg.sender);

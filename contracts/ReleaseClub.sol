@@ -75,6 +75,16 @@ contract ReleaseClub is AccessControlEnumerableUpgradeable {
         _revokeRole(MOD_ROLE, account);
     }
 
+    function addReleases(Release[] memory newReleases) public onlyRole (MEMBER_ROLE) {
+       uint256 i = 0;
+       while(i<newReleases.length)
+       {
+           releases.push(newReleases[i]);
+           emit NewRelease(newReleases[i].tokenContract,newReleases[i].tokenID);
+           i++;
+       }
+   }
+
     // should be called "addReleases"
     function addRelease(Release[] memory newReleases)
         public

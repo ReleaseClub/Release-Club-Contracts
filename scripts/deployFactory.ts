@@ -12,6 +12,7 @@ async function main() {
 
   console.log("ClubFactory deployed to:", factory.address);
   // ClubFactory or proxy contract deployed to: 0x7EbF7C10dBF69CC1d82ed0EA0B499456f2746C73
+
   // Verify the contract
   const waitFor = (delay: number) =>
     new Promise((resolve) =>

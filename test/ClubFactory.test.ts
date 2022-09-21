@@ -7,6 +7,8 @@ import { ClubFactory__factory } from "../typechain-types";
 const CLUB_NAME = "my club";
 // let clubAddress: string;
 
+// https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-ethers#library-linking
+
 describe("ClubFactory", function () {
 
   async function deployClubFixture() {
@@ -23,7 +25,13 @@ describe("ClubFactory", function () {
     const CLUB_NAME = "my club";
     // Contracts are deployed using the first signer/account by default
     const [admin, otherAccount] = await ethers.getSigners();
-    const ClubFactory = await ethers.getContractFactory("ClubFactory");
+    const StringsLib = await ethers.getContractFactory("strings");
+    const stringsLib = await StringsLib.deploy();
+    const ClubFactory = await ethers.getContractFactory("ClubFactory", {
+      libraries: {
+        strings: stringsLib.address,
+      },
+    });
     clubAddress !== undefined ? club.address : defaultAddress;
 
     const clubFactory = await ClubFactory.deploy(defaultAddress);  // (clubAddress);
@@ -38,6 +46,22 @@ describe("ClubFactory", function () {
     await expect(clubFactory.connect(otherAccount).createClub(CLUB_NAME))
       .to.emit(clubFactory, "ClubCreated");
     // .withArgs(CLUB_NAME);
+  });
+
+  it("The club name should not be too long", async function () {
+    const NAME_TOO_LONG = "123456789012345678901";
+    const { clubFactory, admin, otherAccount } = await loadFixture(deployClubFactoryFixture);
+
+    await expect(clubFactory.connect(admin).addClub(NAME_TOO_LONG))
+      .to.be.revertedWith('Error: club name too long');
+  });
+
+  it("The club name should not be too long, edge case", async function () {
+    const NAME_TOO_LONG = "My club  très bien2";  // Maximum size
+    const { clubFactory, admin, otherAccount } = await loadFixture(deployClubFactoryFixture);
+
+    await expect(clubFactory.connect(admin).addClub(NAME_TOO_LONG))
+      .to.emit(clubFactory, "ClubCreated");
   });
 
   it("addClub should create a proxy contract", async function () {
