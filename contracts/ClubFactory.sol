@@ -43,7 +43,7 @@ contract ClubFactory is Ownable, Pausable {
         returns (address)
     {
         // Make sure the club name has a maximum sixe of 20 characters
-        bytes32 nameInBytes32 = strings.toBytes32(name);
+        bytes32 nameInBytes32 = strings.toBytes32(clubName);
         uint nameLength = strings.len(nameInBytes32);
         if (nameLength > MAX_NAME_SIZE) {
             revert("Error: club name too long");

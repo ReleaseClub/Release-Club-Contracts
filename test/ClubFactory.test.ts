@@ -52,7 +52,7 @@ describe("ClubFactory", function () {
     const NAME_TOO_LONG = "123456789012345678901";
     const { clubFactory, admin, otherAccount } = await loadFixture(deployClubFactoryFixture);
 
-    await expect(clubFactory.connect(admin).addClub(NAME_TOO_LONG))
+    await expect(clubFactory.connect(admin).createClub(NAME_TOO_LONG))
       .to.be.revertedWith('Error: club name too long');
   });
 
@@ -60,7 +60,7 @@ describe("ClubFactory", function () {
     const NAME_TOO_LONG = "My club  très bien2";  // Maximum size
     const { clubFactory, admin, otherAccount } = await loadFixture(deployClubFactoryFixture);
 
-    await expect(clubFactory.connect(admin).addClub(NAME_TOO_LONG))
+    await expect(clubFactory.connect(admin).createClub(NAME_TOO_LONG))
       .to.emit(clubFactory, "ClubCreated");
   });
 
