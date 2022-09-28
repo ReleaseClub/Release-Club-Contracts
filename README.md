@@ -1,3 +1,7 @@
+## NOTE
+
+These are the original Release Club contracts written for the metabolism hackathon. This repo has been archived and all future development will take place in https://github.com/ReleaseClub/club-protocol. The original contracts will live on in https://github.com/ReleaseClub/metabolism.
+
 ### Deploy and verify the contracts
 
 - For the main contract
